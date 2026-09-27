@@ -1,20 +1,107 @@
-const video = document.querySelector(".flex");
-const speed = document.querySelector(".speed");
-const speedBar = document.querySelector(".speed-bar");
+const video = document.querySelector(".viewer");
 
-function handleSpeed(e) {
-    const y = e.pageY - speed.offsetTop;
-    const percent = y / speed.offsetHeight;
+const playButton = document.querySelector(".toggle");
 
-    const min = 0.4;
-    const max = 4;
+const progress = document.querySelector(".progress");
+const progressFilled = document.querySelector(".progress__filled");
 
-    const playbackRate = percent * (max - min) + min;
+const volume = document.querySelector(".volume");
 
-    speedBar.style.height = `${percent * 100}%`;
-    speedBar.textContent = `${playbackRate.toFixed(2)}×`;
+const playbackSpeed = document.querySelector(".playbackSpeed");
 
-    video.playbackRate = playbackRate;
+const rewindButton = document.querySelector('[data-skip="-10"]');
+const forwardButton = document.querySelector('[data-skip="25"]');
+
+
+
+function togglePlay() {
+
+    if (video.paused) {
+        video.play();
+    } else {
+        video.pause();
+    }
+
 }
 
-speed.addEventListener("mousemove", handleSpeed);
+playButton.addEventListener("click", togglePlay);
+
+
+// Change button character
+
+function updateButton() {
+
+    if (video.paused) {
+        playButton.textContent = "►";
+    } else {
+        playButton.textContent = "❚ ❚";
+    }
+
+}
+
+video.addEventListener("play", updateButton);
+video.addEventListener("pause", updateButton);
+
+
+
+
+function updateProgress() {
+
+    const percentage =
+        (video.currentTime / video.duration) * 100;
+
+    progressFilled.style.width = `${percentage}%`;
+
+}
+
+video.addEventListener("timeupdate", updateProgress);
+
+
+
+
+progress.addEventListener("click", function (e) {
+
+    const position =
+        e.offsetX / progress.offsetWidth;
+
+    video.currentTime =
+        position * video.duration;
+
+});
+
+
+// --------------------
+// VOLUME
+// --------------------
+
+volume.addEventListener("input", function () {
+
+    video.volume = this.value;
+
+});
+
+
+
+playbackSpeed.addEventListener("input", function () {
+
+    video.playbackRate = this.value;
+
+});
+
+
+// --------------------
+// REWIND / FORWARD
+// --------------------
+
+rewindButton.addEventListener("click", function () {
+
+    video.currentTime -= 10;
+
+});
+
+
+forwardButton.addEventListener("click", function () {
+
+    video.currentTime += 25;
+
+});
